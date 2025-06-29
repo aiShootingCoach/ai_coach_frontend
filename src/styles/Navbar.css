@@ -1,0 +1,53 @@
+/* Mobile-first styles */
+.navbar {
+  background: linear-gradient(90deg, var(--surface-color), #222); /* Gradient for futuristic look */
+  padding: 1rem;
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.3); /* Neon shadow */
+  display: flex;
+  justify-content: center;
+  border-bottom: 1px solid var(--primary-color);
+}
+
+.navbar-brand h1 {
+  color: var(--primary-color);
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  font-family: 'Orbitron', sans-serif;
+  text-shadow: 0 0 5px var(--glow-color);
+  transition: text-shadow 0.3s ease;
+}
+
+.navbar-brand h1:hover {
+  text-shadow: 0 0 10px var(--glow-color);
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* Space between logo and title */
+}
+
+.navbar-logo {
+  height: 50px; /* Fixed height for the logo */
+  width: auto; /* Maintain aspect ratio */
+  object-fit: contain; /* Ensure the logo fits within its container */
+  filter: drop-shadow(0 0 5px var(--glow-color));
+  transition: transform 0.3s ease;
+}
+
+.navbar-logo:hover {
+  transform: scale(1.1);
+}
+
+/* Larger screens (tablet and desktop) */
+@media (min-width: 768px) {
+  .navbar {
+    justify-content: flex-start;
+    padding: 1rem 2rem;
+  }
+
+  .navbar-brand h1 {
+    font-size: 1.8rem;
+  }
+}
