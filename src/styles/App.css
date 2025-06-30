@@ -1,6 +1,7 @@
 :root {
-  --primary-color: #00d4ff; /* Neon cyan for primary elements */
-  --secondary-color: #ff007a; /* Neon magenta for hover/accent */
+  --primary-color: #ffffff; /* Neon cyan for primary elements */
+  --button-color: #cbcbcb; /* Neon cyan for buttons */
+  --secondary-color: #4b4b4b; /* Neon magenta for hover/accent */
   --background-color: #121212; /* Darker background for futuristic feel */
   --surface-color: #1a1a1a; /* Slightly lighter surface for contrast */
   --text-color: #e0e0e0; /* Light gray for readability */
@@ -36,8 +37,8 @@ body {
   width: 100%;
 }
 
-button {
-  background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+/* button {
+  background: linear-gradient(45deg, var(--button-color), var(--secondary-color));
   color: #fff;
   border: none;
   padding: 0.8rem 1.5rem;
@@ -46,7 +47,7 @@ button {
   font-weight: 600;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   box-shadow: 0 0 10px var(--glow-color);
-}
+} */
 
 button:hover {
   transform: scale(1.05);

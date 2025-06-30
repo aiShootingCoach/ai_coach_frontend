@@ -1,7 +1,7 @@
 [
     {
         "stage": "follow",
-        "result": "99.56%",
+        "result": "89.56%",
         "feedback": {
             "right_hip_angle": [
                 "Backward lean disrupts balance.",
@@ -37,7 +37,7 @@
     },
     {
         "stage": "loading",
-        "result": "93.65%",
+        "result": "73.65%",
         "feedback": {
             "right_elbow_angle": [
                 "Reduces power storage due to insufficient bend.",
@@ -75,7 +75,7 @@
     },
     {
         "stage": "release",
-        "result": "99.37%",
+        "result": "69.37%",
         "feedback": {
             "right_shoulder_angle": [
                 "Strains shoulder, reducing consistency.",

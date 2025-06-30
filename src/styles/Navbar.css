@@ -1,10 +1,11 @@
 /* Mobile-first styles */
 .navbar {
-  background: linear-gradient(90deg, var(--surface-color), #222); /* Gradient for futuristic look */
+  background: linear-gradient(90deg, var(--surface-color), #222);
   padding: 1rem;
-  box-shadow: 0 0 15px rgba(0, 212, 255, 0.3); /* Neon shadow */
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: center;
   border-bottom: 1px solid var(--primary-color);
 }
 
@@ -25,13 +26,13 @@
 .navbar-brand {
   display: flex;
   align-items: center;
-  gap: 0.5rem; /* Space between logo and title */
+  gap: 0.5rem;
 }
 
 .navbar-logo {
-  height: 50px; /* Fixed height for the logo */
-  width: auto; /* Maintain aspect ratio */
-  object-fit: contain; /* Ensure the logo fits within its container */
+  height: 50px;
+  width: auto;
+  object-fit: contain;
   filter: drop-shadow(0 0 5px var(--glow-color));
   transition: transform 0.3s ease;
 }
@@ -40,14 +41,34 @@
   transform: scale(1.1);
 }
 
+.navbar .help-button {
+  background: transparent;
+  border: none; /* Brak ramki */
+  box-shadow: none; /* Usunięcie cienia */
+  color: var(--primary-color);
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, text-shadow 0.2s ease;
+  border-radius: 0; /* Usunięcie zaokrąglenia narożników */
+  padding: 0; /* Usunięcie paddingu z App.css */
+}
+
+.navbar .help-button:hover {
+  transform: scale(1.1);
+  text-shadow: 0 0 10px var(--glow-color);
+}
+
 /* Larger screens (tablet and desktop) */
 @media (min-width: 768px) {
   .navbar {
-    justify-content: flex-start;
     padding: 1rem 2rem;
   }
 
   .navbar-brand h1 {
+    font-size: 1.8rem;
+  }
+
+  .navbar .help-button {
     font-size: 1.8rem;
   }
 }
