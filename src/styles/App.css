@@ -1,12 +1,13 @@
 :root {
-  --primary-color: #ffffff; /* Neon cyan for primary elements */
-  --button-color: #cbcbcb; /* Neon cyan for buttons */
-  --secondary-color: #4b4b4b; /* Neon magenta for hover/accent */
+  --primary-color: rgb(123, 224, 0); /* Neon cyan for primary elements */
+  --button-color: #fca3e0; /* Neon cyan for buttons */
+  --secondary-color: rgb(255, 0, 25); /* Neon magenta for hover/accent */
   --background-color: #121212; /* Darker background for futuristic feel */
   --surface-color: #1a1a1a; /* Slightly lighter surface for contrast */
   --text-color: #e0e0e0; /* Light gray for readability */
   --error-color: #ff5555; /* Brighter red for errors */
   --glow-color: rgba(0, 212, 255, 0.5); /* Glow effect for neon */
+  --middle-text-color: rgb(235, 150, 3);
 }
 
 * {
@@ -61,6 +62,7 @@ button:disabled {
 }
 
 input {
+  display: hidden;
   background-color: var(--surface-color);
   border: 1px solid #333;
   color: var(--text-color);

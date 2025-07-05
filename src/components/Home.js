@@ -1,7 +1,7 @@
-// Home.js
-import React, { useState, useRef } from 'react'; // Dodajemy useRef
+import React, { useState, useRef } from 'react';
 import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
 import { MdVideocam, MdGesture, MdSend, MdFollowTheSigns } from 'react-icons/md';
+import { useSpring, animated } from '@react-spring/web';
 import '../styles/Home.css';
 import SectionWrapper from './SectionWrapper';
 
@@ -12,7 +12,13 @@ function Home() {
   const [results, setResults] = useState(null);
   const [error, setError] = useState(null);
   const [expandedSections, setExpandedSections] = useState({});
-  const fileInputRef = useRef(null); // Ref dla inputu pliku
+  const fileInputRef = useRef(null);
+
+  const backgroundAnimation = useSpring({
+    from: { opacity: 0 },
+    to: { opacity: 1 },
+    config: { duration: 1000 },
+  });
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -26,7 +32,7 @@ function Home() {
   };
 
   const handleButtonClick = () => {
-    fileInputRef.current.click(); // Wywołujemy kliknięcie na ukrytym input
+    fileInputRef.current.click();
   };
 
   const handleSubmit = async (e) => {
@@ -78,14 +84,13 @@ function Home() {
 
   const getScoreColorClass = (score) => {
     const scoreValue = parseFloat(score);
-    if (scoreValue > 90) return 'green';
-    if (scoreValue > 80) return 'yellow';
-    if (scoreValue > 70) return 'orange';
-    return 'red';
+    if (scoreValue > 80) return 'high'; // Bliski --primary-color
+    if (scoreValue > 70) return 'medium'; // Pośredni kolor
+    return 'low'; // Bliski --secondary-color
   };
 
   return (
-    <div className="home-container">
+    <animated.div className="home-container" style={backgroundAnimation}>
       <h1>Analyse your shot</h1>
       <div className="upload-section">
         <form onSubmit={handleSubmit} className="upload-form">
@@ -109,7 +114,7 @@ function Home() {
               onChange={handleFileChange}
               required
               ref={fileInputRef}
-              className="hidden-file-input" // Ukrywamy domyślny input
+              className="hidden-file-input"
             />
             <button
               type="button"
@@ -127,7 +132,7 @@ function Home() {
         {averageScore && (
           <div className="score-display">
             <h3>Overall Similarity Score</h3>
-            <p>{averageScore}%</p>
+            <p className= {"p-" + getScoreColorClass(averageScore)} >{averageScore}%</p>
           </div>
         )}
       </div>
@@ -143,6 +148,7 @@ function Home() {
                 : stageKey.charAt(0).toUpperCase() + stageKey.slice(1);
             const isExpanded = expandedSections[stageKey];
             const colorClass = getScoreColorClass(stageData.result);
+            const colorClassRecomendations =  "header-content-" + colorClass
 
             return (
               <div className="recommendation-section" key={stageKey}>
@@ -153,8 +159,8 @@ function Home() {
                   tabIndex={0}
                   onKeyDown={(e) => e.key === 'Enter' && toggleSection(stageKey)}
                 >
-                  <div className="header-content">
-                    <span className={colorClass}>{stageIcons[stageKey]}</span>
+                  <div className={colorClassRecomendations}>
+                    <span >{stageIcons[stageKey]}</span>
                     <h3>{stageName}</h3>
                   </div>
                   {isExpanded ? <FaAngleUp /> : <FaAngleDown />}
@@ -189,7 +195,7 @@ function Home() {
           })}
         </div>
       )}
-    </div>
+    </animated.div>
   );
 }
 
