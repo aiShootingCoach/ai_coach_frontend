@@ -57,6 +57,21 @@
   transform: scale(1.1);
   text-shadow: 0 0 10px var(--glow-color);
 }
+.modal-content{
+  box-shadow: none;
+}
+.modal-close-button{
+  box-shadow: none;
+
+}
+.modal-close-button:hover {
+  transform: scale(1.1);
+  text-shadow: 0 0 10px var(--glow-color);
+  box-shadow: none;
+}                    
+.nav-button{
+  box-shadow: none;
+}   
 
 /* Larger screens (tablet and desktop) */
 @media (min-width: 768px) {

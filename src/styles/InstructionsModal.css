@@ -32,7 +32,7 @@
     color: var(--primary-color);
     font-size: 1.2rem;
     cursor: pointer;
-    transition: transform 0.2s ease, text-shadow 0.2s ease;
+    /* transition: transform 0.2s ease, text-shadow 0.2s ease; */
   }
   
   .modal-close-button:hover {

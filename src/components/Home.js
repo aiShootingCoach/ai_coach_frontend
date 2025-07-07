@@ -4,6 +4,7 @@ import { MdVideocam, MdGesture, MdSend, MdFollowTheSigns } from 'react-icons/md'
 import { useSpring, animated } from '@react-spring/web';
 import '../styles/Home.css';
 import SectionWrapper from './SectionWrapper';
+import WelcomeSection from './WelcomeSection'; // Import the new component
 
 function Home() {
   const [file, setFile] = useState(null);
@@ -107,6 +108,7 @@ function Home() {
 
   return (
     <animated.div className="home-container" style={backgroundAnimation}>
+      {/* <WelcomeSection /> */}
       <h1>Analyse your shot</h1>
       <div className="upload-section">
         <form onSubmit={handleSubmit} className="upload-form">
