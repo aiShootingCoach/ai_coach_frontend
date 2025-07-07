@@ -37,8 +37,8 @@ function Home() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!file || !userName) {
-      setError('Please provide both a video file and your name');
+    if (!file) {
+      setError('Please provide a video file');
       return;
     }
 
@@ -46,16 +46,25 @@ function Home() {
     setError(null);
 
     try {
-      const response = await fetch('/feedback.json');
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('http://localhost:8000/uploadfile/', {
+        method: 'POST',
+        body: formData,
+      });
+
       if (!response.ok) {
         throw new Error('Failed to load feedback');
       }
       const data = await response.json();
       setResults(data);
-      const initialExpanded = data.reduce((acc, stage) => ({
-        ...acc,
-        [stage.stage]: true,
-      }), {});
+      const initialExpanded = Array.isArray(data)
+        ? data.reduce((acc, stage) => ({
+            ...acc,
+            [stage.stage]: true,
+          }), {})
+        : {};
       setExpandedSections(initialExpanded);
     } catch (err) {
       setError('Failed to analyze video. Please try again.');
@@ -71,9 +80,16 @@ function Home() {
     }));
   };
 
-  const averageScore = results
-    ? (results.reduce((sum, stage) => sum + parseFloat(stage.result), 0) / results.length).toFixed(2)
-    : null;
+  // Zabezpieczenie averageScore
+  const averageScore =
+    results && Array.isArray(results.feedback) && results.feedback.length > 0
+      ? (
+          results.feedback.reduce(
+            (sum, stage) => sum + parseFloat(stage.result),
+            0
+          ) / results.feedback.length
+        ).toFixed(2)
+      : null;
 
   const stageIcons = {
     loading: <MdVideocam />,
@@ -132,15 +148,17 @@ function Home() {
         {averageScore && (
           <div className="score-display">
             <h3>Overall Similarity Score</h3>
-            <p className= {"p-" + getScoreColorClass(averageScore)} >{averageScore}%</p>
+            <p className= {"p-" + getScoreColorClass(Math.trunc(averageScore))} >{averageScore} OVR</p>
           </div>
         )}
       </div>
-      {results && (
+      {results && Array.isArray(results.feedback) && Array.isArray(results.frames) && (
         <div className="results-section">
           <h2>Analysis Results</h2>
           {["loading", "gather", "release", "follow"].map((stageKey, idx) => {
-            const stageData = results.find((stage) => stage.stage === stageKey);
+            const stageData = results.feedback.find(
+              (stage) => stage.stage === stageKey
+            );
             if (!stageData) return null;
             const stageName =
               stageKey === "follow"
@@ -148,7 +166,8 @@ function Home() {
                 : stageKey.charAt(0).toUpperCase() + stageKey.slice(1);
             const isExpanded = expandedSections[stageKey];
             const colorClass = getScoreColorClass(stageData.result);
-            const colorClassRecomendations =  "header-content-" + colorClass
+            const colorClassRecomendations = "header-content-" + colorClass;
+            const frame = results.frames[stageKey] || results.frames[0];
 
             return (
               <div className="recommendation-section" key={stageKey}>
@@ -157,10 +176,10 @@ function Home() {
                   onClick={() => toggleSection(stageKey)}
                   role="button"
                   tabIndex={0}
-                  onKeyDown={(e) => e.key === 'Enter' && toggleSection(stageKey)}
+                  onKeyDown={(e) => e.key === "Enter" && toggleSection(stageKey)}
                 >
                   <div className={colorClassRecomendations}>
-                    <span >{stageIcons[stageKey]}</span>
+                    <span>{stageIcons[stageKey]}</span>
                     <h3>{stageName}</h3>
                   </div>
                   {isExpanded ? <FaAngleUp /> : <FaAngleDown />}
@@ -174,20 +193,28 @@ function Home() {
                       ></div>
                     </div>
                     <p className={`similarity-text ${colorClass}`}>
-                      Similarity: {parseFloat(stageData.result).toFixed(2)}%
+                      Similarity: {Math.trunc(stageData.result)} OVR
                     </p>
-                    {Object.entries(stageData.feedback).map(
-                      ([feature, feedbackArr], idx) => (
-                        <div className="feedback-item" key={feature + idx}>
-                          <strong className={colorClass}>{feature.replace(/_/g, " ")}:</strong>
-                          <ul>
-                            {feedbackArr.map((msg, i) => (
-                              <li key={i}>{msg}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      )
-                    )}
+                    <img
+                      src={`data:image/jpeg;base64,${frame}`}
+                      alt={`${stageName} frame`}
+                      className="stage-frame"
+                    />
+                    {stageData.feedback &&
+                      Object.entries(stageData.feedback).map(
+                        ([feature, feedbackArr], idx) => (
+                          <div className="feedback-item" key={feature + idx}>
+                            <strong className={colorClass}>
+                              {feature.replace(/_/g, " ")}:
+                            </strong>
+                            <ul>
+                              {feedbackArr.map((msg, i) => (
+                                <li key={i}>{msg}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )
+                      )}
                   </div>
                 )}
               </div>
