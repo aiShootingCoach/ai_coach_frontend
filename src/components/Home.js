@@ -100,9 +100,9 @@ function Home() {
 
   const getScoreColorClass = (score) => {
     const scoreValue = parseFloat(score);
-    if (scoreValue > 80) return 'high'; // Bliski --primary-color
-    if (scoreValue > 70) return 'medium'; // Pośredni kolor
-    return 'low'; // Bliski --secondary-color
+    if (scoreValue > 80) return 'high';
+    if (scoreValue > 70) return 'medium';
+    return 'low';
   };
 
   return (
@@ -148,7 +148,7 @@ function Home() {
         {averageScore && (
           <div className="score-display">
             <h3>Overall Similarity Score</h3>
-            <p className= {"p-" + getScoreColorClass(Math.trunc(averageScore))} >{averageScore} OVR</p>
+            <p className= {"p-" + getScoreColorClass(averageScore)} >{Math.trunc(averageScore)} OVR</p>
           </div>
         )}
       </div>
@@ -167,7 +167,7 @@ function Home() {
             const isExpanded = expandedSections[stageKey];
             const colorClass = getScoreColorClass(stageData.result);
             const colorClassRecomendations = "header-content-" + colorClass;
-            const frame = results.frames[stageKey] || results.frames[0];
+            const frame = results.frames[idx] || results.frames[0]; 
 
             return (
               <div className="recommendation-section" key={stageKey}>
@@ -186,35 +186,38 @@ function Home() {
                 </div>
                 {isExpanded && (
                   <div className="recommendation-content">
-                    <div className="progress-bar">
-                      <div
-                        className={`progress-fill ${colorClass}`}
-                        style={{ width: `${stageData.result}%` }}
-                      ></div>
+                    <div className="feedback-container">
+                      <div className="progress-bar">
+                        <div
+                          className={`progress-fill ${colorClass}`}
+                          style={{ width: `${stageData.result}%` }}
+                        ></div>
+                      </div>
+                      <p className={`similarity-text ${colorClass}`}>
+                        Similarity: {Math.trunc(stageData.result)} OVR
+                      </p>
+                      {stageData.feedback &&
+                        Object.entries(stageData.feedback).map(
+                          ([feature, feedbackArr], idx) => (
+                            <div className="feedback-item" key={feature + idx}>
+                              <strong className={colorClass}>
+                                {feature.replace(/_/g, " ")}:
+                              </strong>
+                              <ul>
+                                {feedbackArr.map((msg, i) => (
+                                  <li key={i}>{msg}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )
+                        )}
                     </div>
-                    <p className={`similarity-text ${colorClass}`}>
-                      Similarity: {Math.trunc(stageData.result)} OVR
-                    </p>
+                    {console.log(frame[0])}
                     <img
-                      src={`data:image/jpeg;base64,${frame}`}
+                      src={`data:image/jpeg;base64,${frame[0]}`}
                       alt={`${stageName} frame`}
                       className="stage-frame"
                     />
-                    {stageData.feedback &&
-                      Object.entries(stageData.feedback).map(
-                        ([feature, feedbackArr], idx) => (
-                          <div className="feedback-item" key={feature + idx}>
-                            <strong className={colorClass}>
-                              {feature.replace(/_/g, " ")}:
-                            </strong>
-                            <ul>
-                              {feedbackArr.map((msg, i) => (
-                                <li key={i}>{msg}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        )
-                      )}
                   </div>
                 )}
               </div>

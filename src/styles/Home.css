@@ -181,20 +181,11 @@ button:disabled {
   text-shadow: 0 0 10px var(--glow-color);
 }
 
-/* .header-content svg.high {
-  color: var(--primary-color); rgb(61, 199, 249)
-
-
-.header-content svg.medium {
-  color: var(--middle-text-color); /* Pośredni kolor między cyjanem a magentą
-}
-
-.header-content svg.low {
-  color: var(--secondary-color); rgb(210, 0, 102)
-} */
-
 .recommendation-content {
   padding: 0.5rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center content for mobile */
 }
 
 .progress-bar {
@@ -241,6 +232,7 @@ button:disabled {
 
 .feedback-item {
   margin-bottom: 0.8rem;
+  width: 100%; /* Ensure full width for stacking */
 }
 
 .feedback-item strong.high {
@@ -273,6 +265,16 @@ button:disabled {
   list-style: none;
   padding-left: 0;
   margin-left: 0;
+}
+
+.stage-frame {
+  max-width: 200px; /* Smaller size */
+  height: auto;
+  border-radius: 12px; /* Rounded corners */
+  border: 2px solid var(--primary-color); /* Frame */
+  box-shadow: 0 0 8px var(--glow-color); /* Subtle glow effect */
+  margin: 0.5rem auto; /* Centered on mobile */
+  display: block;
 }
 
 /* Larger screens (tablet and desktop) */
@@ -337,17 +339,35 @@ button:disabled {
 
   .recommendation-content {
     padding: 0.8rem 0;
+    flex-direction: row; /* Two-column layout */
+    align-items: flex-start; /* Align items to top */
+    gap: 1rem;
+    max-width: 100%; /* Prevent overflow */
+    flex-wrap: nowrap; /* Ensure items stay in one row */
+  }
+
+  .feedback-container {
+    flex: 1; /* Text takes available space */
+    order: 0; /* Text on left */
+    display: flex;
+    flex-direction: column; /* Stack feedback items vertically */
   }
 
   .feedback-item {
-    display: inline-block;
-    width: 48%;
-    vertical-align: top;
-    margin-right: 2%;
+    display: block; /* Stack vertically */
+    width: 100%; /* Full width for stacking */
+    margin-right: 0; /* Remove horizontal spacing */
   }
 
-  .feedback-item:nth-child(2n) {
-    margin-right: 0;
+  .stage-frame {
+    max-width: 300px; /* Slightly larger for desktop */
+    order: 1; /* Image on right */
+    margin: 0; /* Remove auto margin for desktop */
+  }
+
+  .recommendation-content > :not(.stage-frame) {
+    flex: 1; /* Text elements take remaining space */
+    order: 0; /* Text stays on the left */
   }
 }
 
