@@ -1,11 +1,14 @@
 import React, { useState, useRef } from 'react';
 import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
-import { MdVideocam, MdGesture, MdSend, MdFollowTheSigns } from 'react-icons/md';
+import { FaPersonFalling, FaPersonRunning, FaPersonWalking } from "react-icons/fa6";
+import { BsPersonRaisedHand } from "react-icons/bs";
 import { useSpring, animated } from '@react-spring/web';
 import '../styles/Home.css';
 import SectionWrapper from './SectionWrapper';
-import WelcomeSection from './WelcomeSection'; // Import the new component
 
+function capitalizeFirstLetter(val) {
+  return String(val).charAt(0).toUpperCase() + String(val).slice(1);
+} 
 function Home() {
   const [file, setFile] = useState(null);
   const [userName, setUserName] = useState('');
@@ -93,10 +96,10 @@ function Home() {
       : null;
 
   const stageIcons = {
-    loading: <MdVideocam />,
-    gather: <MdGesture />,
-    release: <MdSend />,
-    follow: <MdFollowTheSigns />,
+    loading: <FaPersonWalking />,
+    gather: <FaPersonRunning />,
+    release: <FaPersonFalling />,
+    follow: <BsPersonRaisedHand />,
   };
 
   const getScoreColorClass = (score) => {
@@ -108,7 +111,6 @@ function Home() {
 
   return (
     <animated.div className="home-container" style={backgroundAnimation}>
-      {/* <WelcomeSection /> */}
       <h1>Analyse your shot</h1>
       <div className="upload-section">
         <form onSubmit={handleSubmit} className="upload-form">
@@ -200,15 +202,19 @@ function Home() {
                       </p>
                       {stageData.feedback &&
                         Object.entries(stageData.feedback).map(
-                          ([feature, feedbackArr], idx) => (
-                            <div className="feedback-item" key={feature + idx}>
-                              <strong className={colorClass}>
-                                {feature.replace(/_/g, " ")}:
-                              </strong>
-                              <ul>
-                                {feedbackArr.map((msg, i) => (
-                                  <li key={i}>{msg}</li>
-                                ))}
+                          ([feature, feedbackObj], idx) => (
+                            <div className="feedback-item" key={feature + idx} style={{marginBottom: '1.5em', padding: '1em'}}>
+                              <div style={{marginBottom: '0.5em'}}>
+                                <strong className={colorClass} style={{fontSize: '1.1em'}}>
+                                  {capitalizeFirstLetter(feature.replace(/_/g, " "))}
+                                  {feedbackObj.condition ? (
+                                    <span style={{fontWeight: 'normal', color: '#888'}}> ({capitalizeFirstLetter(feedbackObj.condition.replace(/big /, ''))})</span>
+                                  ) : null}
+                                </strong>
+                              </div>
+                              <ul style={{margin: 0, paddingLeft: '1.2em'}}>
+                                <li><strong>Cause: </strong>{feedbackObj.feedback[0]}</li>
+                                <li><strong>Solution:</strong> {feedbackObj.feedback[1]}</li>
                               </ul>
                             </div>
                           )

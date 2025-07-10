@@ -232,20 +232,23 @@ button:disabled {
 }
 
 .feedback-item {
-  margin-bottom: 0.8rem;
-  width: 100%; /* Ensure full width for stacking */
+  margin-bottom: 1.5em;
+  padding: 1em;
+  /* border: 1px solid #eee; */
+  border-radius: 8px;
 }
 
-.feedback-item strong.high {
-  color: var(--primary-color);
+.feedback-item strong {
+  font-size: 1.1em;
 }
 
-.feedback-item strong.medium {
-  color: var(--middle-text-color);
+.feedback-item ul {
+  margin: 0;
+  padding-left: 1.2em;
 }
 
-.feedback-item strong.low {
-  color: var(--secondary-color);
+.feedback-item li {
+  margin-bottom: 0.3em;
 }
 
 .recommendation-section li {
@@ -358,6 +361,7 @@ button:disabled {
     display: block; /* Stack vertically */
     width: 100%; /* Full width for stacking */
     margin-right: 0; /* Remove horizontal spacing */
+    background-color: var(--background-color);
   }
 
   .stage-frame {
