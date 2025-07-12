@@ -23,7 +23,7 @@
   text-shadow: 0 0 10px var(--glow-color);
 }
 
-.navbar-brand {
+.navbar-brand, .navbar-toggle {
   display: flex;
   align-items: center;
   gap: 0.5rem;

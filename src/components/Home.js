@@ -200,15 +200,28 @@ function Home() {
                       <p className={`similarity-text ${colorClass}`}>
                         Similarity: {Math.trunc(stageData.result)} OVR
                       </p>
-                      {stageData.feedback &&
+                      {stageData.feedback && Object.keys(stageData.feedback).length > 0 ? (
                         Object.entries(stageData.feedback).map(
                           ([feature, feedbackObj], idx) => (
                             <div className="feedback-item" key={feature + idx} style={{marginBottom: '1.5em', padding: '1em'}}>
                               <div style={{marginBottom: '0.5em'}}>
                                 <strong className={colorClass} style={{fontSize: '1.1em'}}>
                                   {capitalizeFirstLetter(feature.replace(/_/g, " "))}
+                                  {console.log('feedbackObj')}
+                                  {console.log(feedbackObj)}
                                   {feedbackObj.condition ? (
-                                    <span style={{fontWeight: 'normal', color: '#888'}}> ({capitalizeFirstLetter(feedbackObj.condition.replace(/big /, ''))})</span>
+                                    <span style={{fontWeight: 'normal', color: '#888'}}>
+                                      {(() => {
+                                        if (!feedbackObj.condition) return null;
+                                        let cond = feedbackObj.condition;
+                                        if (cond.startsWith('big ')) {
+                                          cond = cond.replace(/^big /, '');
+                                          return `(${capitalizeFirstLetter(cond)})`;
+                                        } else {
+                                          return `(Slightly ${capitalizeFirstLetter(cond)})`;
+                                        }
+                                      })()}
+                                    </span>
                                   ) : null}
                                 </strong>
                               </div>
@@ -218,9 +231,11 @@ function Home() {
                               </ul>
                             </div>
                           )
-                        )}
+                        )
+                      ) : (
+                        <div><h2><strong>Perfect:</strong> no fixes needed!</h2></div>
+                      )}
                     </div>
-                    {console.log(frame[0])}
                     <img
                       src={`data:image/jpeg;base64,${frame[0]}`}
                       alt={`${stageName} frame`}

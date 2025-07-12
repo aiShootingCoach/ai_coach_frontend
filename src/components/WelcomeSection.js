@@ -56,8 +56,14 @@ function WelcomeSection() {
         className="welcome-sign"
         style={signAnimation}
       >
-        Welcome to Shot Analyzer
+        Welcome to Spot On Shot
       </animated.h1>
+      <animated.h2
+        className="welcome-small-sign"
+        style={signAnimation}
+      >
+        Your AI Basketball Coach
+      </animated.h2>
       <div className="button-container">
         <animated.button
           className="enter-button"
