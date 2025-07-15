@@ -53,7 +53,7 @@ function Home() {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch('http://localhost:8000/uploadfile/', {
+      const response = await fetch('https://api.spotonshot.com/uploadfile/', {
         method: 'POST',
         body: formData,
       });
@@ -209,6 +209,7 @@ function Home() {
                                   {capitalizeFirstLetter(feature.replace(/_/g, " "))}
                                   {console.log('feedbackObj')}
                                   {console.log(feedbackObj)}
+                                  {console.log(stageData.feedback)}
                                   {feedbackObj.condition ? (
                                     <span style={{fontWeight: 'normal', color: '#888'}}>
                                       {(() => {
@@ -226,8 +227,14 @@ function Home() {
                                 </strong>
                               </div>
                               <ul style={{margin: 0, paddingLeft: '1.2em'}}>
-                                <li><strong>Cause: </strong>{feedbackObj.feedback[0]}</li>
-                                <li><strong>Solution:</strong> {feedbackObj.feedback[1]}</li>
+                                {Array.isArray(feedbackObj.feedback) ? (
+                                  <>
+                                    <li><strong>Cause: </strong>{feedbackObj.feedback[0]}</li>
+                                    <li><strong>Solution:</strong> {feedbackObj.feedback[1]}</li>
+                                  </>
+                                ) : (
+                                  <li>No feedback available.</li>
+                                )}
                               </ul>
                             </div>
                           )
