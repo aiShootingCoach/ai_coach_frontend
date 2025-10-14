@@ -1,11 +1,13 @@
 :root {
-  --primary-color: #00d4ff; /* Neon cyan for primary elements */
-  --secondary-color: #ff007a; /* Neon magenta for hover/accent */
-  --background-color: #121212; /* Darker background for futuristic feel */
+  --primary-color: rgb(123, 224, 0); /* Neon cyan for primary elements */
+  --button-color: #fca3e0; /* Neon cyan for buttons */
+  --secondary-color: rgb(255, 0, 25); /* Neon magenta for hover/accent */
+  --background-color: #ffffff00; /* Darker background for futuristic feel */
   --surface-color: #1a1a1a; /* Slightly lighter surface for contrast */
   --text-color: #e0e0e0; /* Light gray for readability */
   --error-color: #ff5555; /* Brighter red for errors */
   --glow-color: rgba(0, 212, 255, 0.5); /* Glow effect for neon */
+  --middle-text-color: rgb(235, 150, 3);
 }
 
 * {
@@ -36,17 +38,6 @@ body {
   width: 100%;
 }
 
-button {
-  background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-  color: #fff;
-  border: none;
-  padding: 0.8rem 1.5rem;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 0 10px var(--glow-color);
-}
 
 button:hover {
   transform: scale(1.05);
@@ -59,7 +50,9 @@ button:disabled {
   cursor: not-allowed;
 }
 
+
 input {
+  display: hidden;
   background-color: var(--surface-color);
   border: 1px solid #333;
   color: var(--text-color);

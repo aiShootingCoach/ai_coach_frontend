@@ -1,16 +1,28 @@
-import React, { useState } from 'react';
-import { FaAngleDown, FaAngleUp } from 'react-icons/fa'; // Icons for collapse/expand
-import { MdVideocam, MdGesture, MdSend, MdFollowTheSigns } from 'react-icons/md'; // Stage-specific icons
+import React, { useState, useRef } from 'react';
+import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
+import { FaPersonFalling, FaPersonRunning, FaPersonWalking } from "react-icons/fa6";
+import { BsPersonRaisedHand } from "react-icons/bs";
+import { useSpring, animated } from '@react-spring/web';
 import '../styles/Home.css';
 import SectionWrapper from './SectionWrapper';
 
+function capitalizeFirstLetter(val) {
+  return String(val).charAt(0).toUpperCase() + String(val).slice(1);
+} 
 function Home() {
   const [file, setFile] = useState(null);
   const [userName, setUserName] = useState('');
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState(null);
   const [error, setError] = useState(null);
-  const [expandedSections, setExpandedSections] = useState({}); // Track expanded state
+  const [expandedSections, setExpandedSections] = useState({});
+  const fileInputRef = useRef(null);
+
+  const backgroundAnimation = useSpring({
+    from: { opacity: 0 },
+    to: { opacity: 1 },
+    config: { duration: 1000 },
+  });
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -23,10 +35,14 @@ function Home() {
     }
   };
 
+  const handleButtonClick = () => {
+    fileInputRef.current.click();
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!file || !userName) {
-      setError('Please provide both a video file and your name');
+    if (!file) {
+      setError('Please provide a video file');
       return;
     }
 
@@ -34,17 +50,25 @@ function Home() {
     setError(null);
 
     try {
-      const response = await fetch('/feedback.json');
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('https://api.spotonshot.com/uploadfile/', {
+        method: 'POST',
+        body: formData,
+      });
+
       if (!response.ok) {
         throw new Error('Failed to load feedback');
       }
       const data = await response.json();
       setResults(data);
-      // Initialize all sections as expanded by default
-      const initialExpanded = data.reduce((acc, stage) => ({
-        ...acc,
-        [stage.stage]: true,
-      }), {});
+      const initialExpanded = Array.isArray(data)
+        ? data.reduce((acc, stage) => ({
+            ...acc,
+            [stage.stage]: true,
+          }), {})
+        : {};
       setExpandedSections(initialExpanded);
     } catch (err) {
       setError('Failed to analyze video. Please try again.');
@@ -60,22 +84,34 @@ function Home() {
     }));
   };
 
-  // Calculate average similarity score
-  const averageScore = results
-    ? (results.reduce((sum, stage) => sum + parseFloat(stage.result), 0) / results.length).toFixed(2)
-    : null;
+  // Zabezpieczenie averageScore
+  const averageScore =
+    results && Array.isArray(results.feedback) && results.feedback.length > 0
+      ? (
+          results.feedback.reduce(
+            (sum, stage) => sum + parseFloat(stage.result),
+            0
+          ) / results.feedback.length
+        ).toFixed(2)
+      : null;
 
-  // Map stage keys to icons
   const stageIcons = {
-    loading: <MdVideocam />,
-    gather: <MdGesture />,
-    release: <MdSend />,
-    follow: <MdFollowTheSigns />,
+    loading: <FaPersonWalking />,
+    gather: <FaPersonRunning />,
+    release: <FaPersonFalling />,
+    follow: <BsPersonRaisedHand />,
+  };
+
+  const getScoreColorClass = (score) => {
+    const scoreValue = parseFloat(score);
+    if (scoreValue > 80) return 'high';
+    if (scoreValue > 70) return 'medium';
+    return 'low';
   };
 
   return (
-    <div className="home-container">
-      <h1>Shot Analysis Tool</h1>
+    <animated.div className="home-container" style={backgroundAnimation}>
+      <h1>Analyse your shot</h1>
       <div className="upload-section">
         <form onSubmit={handleSubmit} className="upload-form">
           <div className="form-group">
@@ -97,7 +133,16 @@ function Home() {
               accept="video/*"
               onChange={handleFileChange}
               required
+              ref={fileInputRef}
+              className="hidden-file-input"
             />
+            <button
+              type="button"
+              className="custom-file-button"
+              onClick={handleButtonClick}
+            >
+              {file ? file.name : 'Choose Video File'}
+            </button>
           </div>
           <button type="submit" disabled={loading}>
             {loading ? 'Processing...' : 'Submit'}
@@ -107,68 +152,110 @@ function Home() {
         {averageScore && (
           <div className="score-display">
             <h3>Overall Similarity Score</h3>
-            <p>{averageScore}%</p>
+            <p className= {"p-" + getScoreColorClass(averageScore)} >{Math.trunc(averageScore)} OVR</p>
           </div>
         )}
       </div>
-      {results && (
+      {results && Array.isArray(results.feedback) && Array.isArray(results.frames) && (
         <div className="results-section">
           <h2>Analysis Results</h2>
-            {["loading", "gather", "release", "follow"].map((stageKey, idx) => {
-              const stageData = results.find((stage) => stage.stage === stageKey);
-              if (!stageData) return null;
-              const stageName =
-                stageKey === "follow"
-                  ? "Follow-Thru"
-                  : stageKey.charAt(0).toUpperCase() + stageKey.slice(1);
-              const isExpanded = expandedSections[stageKey];
+          {["loading", "gather", "release", "follow"].map((stageKey, idx) => {
+            const stageData = results.feedback.find(
+              (stage) => stage.stage === stageKey
+            );
+            if (!stageData) return null;
+            const stageName =
+              stageKey === "follow"
+                ? "Follow-Thru"
+                : stageKey.charAt(0).toUpperCase() + stageKey.slice(1);
+            const isExpanded = expandedSections[stageKey];
+            const colorClass = getScoreColorClass(stageData.result);
+            const colorClassRecomendations = "header-content-" + colorClass;
+            const frame = results.frames[idx] || results.frames[0]; 
 
-              return (
-                <div className="recommendation-section" key={stageKey}>
-                  <div
-                    className="recommendation-header"
-                    onClick={() => toggleSection(stageKey)}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) => e.key === 'Enter' && toggleSection(stageKey)}
-                  >
-                    <div className="header-content">
-                      {stageIcons[stageKey]}
-                      <h3>{stageName}</h3>
-                    </div>
-                    {isExpanded ? <FaAngleUp /> : <FaAngleDown />}
+            return (
+              <div className="recommendation-section" key={stageKey}>
+                <div
+                  className="recommendation-header"
+                  onClick={() => toggleSection(stageKey)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => e.key === "Enter" && toggleSection(stageKey)}
+                >
+                  <div className={colorClassRecomendations}>
+                    <span>{stageIcons[stageKey]}</span>
+                    <h3>{stageName}</h3>
                   </div>
-                  {isExpanded && (
-                    <div className="recommendation-content">
+                  {isExpanded ? <FaAngleUp /> : <FaAngleDown />}
+                </div>
+                {isExpanded && (
+                  <div className="recommendation-content">
+                    <div className="feedback-container">
                       <div className="progress-bar">
                         <div
-                          className="progress-fill"
+                          className={`progress-fill ${colorClass}`}
                           style={{ width: `${stageData.result}%` }}
                         ></div>
                       </div>
-                      <p className="similarity-text">
-                        Similarity: {parseFloat(stageData.result).toFixed(2)}%
+                      <p className={`similarity-text ${colorClass}`}>
+                        Similarity: {Math.trunc(stageData.result)} OVR
                       </p>
-                      {Object.entries(stageData.feedback).map(
-                        ([feature, feedbackArr], idx) => (
-                          <div className="feedback-item" key={feature + idx}>
-                            <strong>{feature.replace(/_/g, " ")}:</strong>
-                            <ul>
-                              {feedbackArr.map((msg, i) => (
-                                <li key={i}>{msg}</li>
-                              ))}
-                            </ul>
-                          </div>
+                      {stageData.feedback && Object.keys(stageData.feedback).length > 0 ? (
+                        Object.entries(stageData.feedback).map(
+                          ([feature, feedbackObj], idx) => (
+                            <div className="feedback-item" key={feature + idx} style={{marginBottom: '1.5em', padding: '1em'}}>
+                              <div style={{marginBottom: '0.5em'}}>
+                                <strong className={colorClass} style={{fontSize: '1.1em'}}>
+                                  {capitalizeFirstLetter(feature.replace(/_/g, " "))}
+                                  {console.log('feedbackObj')}
+                                  {console.log(feedbackObj)}
+                                  {console.log(stageData.feedback)}
+                                  {feedbackObj.condition ? (
+                                    <span style={{fontWeight: 'normal', color: '#888'}}>
+                                      {(() => {
+                                        if (!feedbackObj.condition) return null;
+                                        let cond = feedbackObj.condition;
+                                        if (cond.startsWith('big ')) {
+                                          cond = cond.replace(/^big /, '');
+                                          return `(${capitalizeFirstLetter(cond)})`;
+                                        } else {
+                                          return `(Slightly ${capitalizeFirstLetter(cond)})`;
+                                        }
+                                      })()}
+                                    </span>
+                                  ) : null}
+                                </strong>
+                              </div>
+                              <ul style={{margin: 0, paddingLeft: '1.2em'}}>
+                                {Array.isArray(feedbackObj.feedback) ? (
+                                  <>
+                                    <li><strong>Cause: </strong>{feedbackObj.feedback[0]}</li>
+                                    <li><strong>Solution:</strong> {feedbackObj.feedback[1]}</li>
+                                  </>
+                                ) : (
+                                  <li>No feedback available.</li>
+                                )}
+                              </ul>
+                            </div>
+                          )
                         )
+                      ) : (
+                        <div><h2><strong>Perfect:</strong> no fixes needed!</h2></div>
                       )}
                     </div>
-                  )}
-                </div>
-              );
-            })}
+                    <img
+                      src={`data:image/jpeg;base64,${frame[0]}`}
+                      alt={`${stageName} frame`}
+                      className="stage-frame"
+                    />
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
-    </div>
+    </animated.div>
   );
 }
 
