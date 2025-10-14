@@ -1,7 +1,7 @@
 :root {
-  --primary-color: rgb(123, 224, 0); /* Neon cyan for primary elements */
+  --primary-color: rgb(255, 69, 0); /* Neon cyan for primary elements */
   --button-color: #fca3e0; /* Neon cyan for buttons */
-  --secondary-color: rgb(255, 0, 25); /* Neon magenta for hover/accent */
+  --secondary-color: rgb(255, 140, 0); /* Neon magenta for hover/accent */
   --background-color: #ffffff00; /* Darker background for futuristic feel */
   --surface-color: #1a1a1a; /* Slightly lighter surface for contrast */
   --text-color: #e0e0e0; /* Light gray for readability */
